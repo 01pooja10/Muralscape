@@ -1,17 +1,18 @@
 import torch
 import torch.nn as nn
-from torch.nn.optim import Adam
+import torch.optim as optim
 import torchvision.transforms as transforms
 import torchvision.models as models
+from torchvision.utils import save_image
 from PIL import Image
 import os
 import config
+from tqdm import tqdm
 import warnings
 from torch.cuda.amp import autocast, GradScaler
 warnings.filterwarnings('ignore')
 
 mod = models.vgg19(pretrained=True).features
-print(mod)
 
 class VGGModel(nn.Module):
     def __init__(self):
@@ -21,7 +22,7 @@ class VGGModel(nn.Module):
 
     def forward(self,x):
         features = []
-        for l,ln in enumerate(self.model):
+        for ln,l in enumerate(self.model):
             x = l(x)
             if str(ln) in self.feat:
                 features.append(x)
@@ -31,57 +32,72 @@ class VGGModel(nn.Module):
 def image_loader(path):
     img = Image.open(path)
     transform = transforms.Compose([transforms.Resize((config.im_size,config.im_size)),
-                                    transforms.ToTensor()
+                                    transforms.ToTensor(),
                                     transforms.Normalize((0.5,),(0.5,))])
     img = transform(img).unsqueeze(0)
     img = img.to(config.device)
     return img
 
-def g(img):
-    gen = img.clone().requires_grad(True)
+def gen(img):
+    gen = img.clone().requires_grad_(True)
     return gen.to(config.device)
 
-def style(path):
-    img = Image.open(path).unsqueeze(0)
-    pass
-
 orig = image_loader(config.im_path)
-g = g(orig)
-style_im = style(config.style_path)
+gn = gen(orig)
+style_im = image_loader(config.style_path)
 
-def train(vgg,opt,loss,scl):
+def train(vgg,opt,scaler):
     '''
     Function: Train the entire Neural Style Transfer model
 
     Parameters:
     vgg - instance of the VGG-19 model
     opt - Optimizer Adam
-    loss - Loss initialized
-    scl - Scaler to scale the loss
+    scaler - Scaler to scale loss for mixed precision training
 
     Returns: Epochs, loss values and completes training
     '''
     vgg.eval()
     for epoch in range(config.epochs):
+        print('Epoch: ',str(epoch+1))
         original = vgg(orig)
-        generated = vgg(g)
+        generated = vgg(gn)
         style = vgg(style_im)
         sloss = 0
         oloss = 0
         for o,g,s in zip(original,generated,style):
             batch_size,channel,height,width = g.shape
-            print(g.shape)
             oloss += torch.mean((g-o)**2)
-
             #gram/style matrix
-    pass
+            gram = g.view(channel,height*width).mm(g.view(channel,height*width).t())
+            ab = s.view(channel,height*width).mm(s.view(channel,height*width).t())
+            sloss = torch.mean((gram-ab)**2)
+
+        with autocast():
+            loss = config.a*oloss + config.b*sloss
+            opt.zero_grad()
+            scaler.scale(loss).backward(retain_graph=True)
+            scaler.step(opt)
+            scaler.update()
+
+        if epoch%10==0:
+            print('Epoch: ',str(epoch),'Model loss: ',loss.item())
+
+    chkpt = {'model':vgg.state_dict(),'optimizer':opt.state_dict()}
+    torch.save(chkpt,config.model_path+'/nst_model.pth')
+
+    with torch.no_grad():
+        save_image(gn,config.out_path+'/output.jpg')
+
+    print('Final Loss: ',loss.item())
+
 
 def main():
-    opt = Adam([g],lr=config.lr)
+    opt = optim.Adam([gn],lr=config.lr)
     model = VGGModel().to(config.device)
-    loss = nn.LGBFS()
     scaler = GradScaler()
-    pass
+    train(model,opt,scaler)
+    print('Training complete.')
 
 if __name__=='__main__':
     main()
