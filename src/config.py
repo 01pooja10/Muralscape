@@ -1,0 +1,9 @@
+path = r'C:\Users\Pooja\Documents\ML_projects\Muralscape\model'
+im_size = 256
+device = 'cuda'
+im_path = r''
+style_path = r''
+epochs = 200
+a = 1
+b = 0.01
+lr = 0.001
