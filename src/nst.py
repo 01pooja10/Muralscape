@@ -59,7 +59,7 @@ def train(vgg,opt,scaler):
     '''
     vgg.eval()
     for epoch in range(config.epochs):
-        print('Epoch: ',str(epoch+1))
+        print('epoch ',str(epoch))
         original = vgg(orig)
         generated = vgg(gn)
         style = vgg(style_im)
@@ -68,6 +68,7 @@ def train(vgg,opt,scaler):
         for o,g,s in zip(original,generated,style):
             batch_size,channel,height,width = g.shape
             oloss += torch.mean((g-o)**2)
+
             #gram/style matrix
             gram = g.view(channel,height*width).mm(g.view(channel,height*width).t())
             ab = s.view(channel,height*width).mm(s.view(channel,height*width).t())
@@ -81,13 +82,13 @@ def train(vgg,opt,scaler):
             scaler.update()
 
         if epoch%10==0:
-            print('Epoch: ',str(epoch),'Model loss: ',loss.item())
+            print('Model loss: ',loss.item())
 
     chkpt = {'model':vgg.state_dict(),'optimizer':opt.state_dict()}
     torch.save(chkpt,config.model_path+'/nst_model.pth')
 
     with torch.no_grad():
-        save_image(gn,config.out_path+'/output.jpg')
+        save_image(gn,config.out_path+'/output1.jpg')
 
     print('Final Loss: ',loss.item())
 
