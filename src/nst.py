@@ -90,7 +90,7 @@ def train(vgg,opt,scaler):
     torch.save(chkpt,config.model_path+'/nst_model.pth')
 
     with torch.no_grad():
-        save_image(gn,config.out_path+'/output1.jpg')
+        save_image(gn,config.out_path+'/output.jpg')
 
     print('Final Loss: ',loss.item())
 
