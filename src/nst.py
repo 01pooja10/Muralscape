@@ -65,6 +65,7 @@ def train(vgg,opt,scaler):
         style = vgg(style_im)
         sloss = 0
         oloss = 0
+
         for o,g,s in zip(original,generated,style):
             batch_size,channel,height,width = g.shape
             oloss += torch.mean((g-o)**2)
@@ -73,6 +74,7 @@ def train(vgg,opt,scaler):
             gram = g.view(channel,height*width).mm(g.view(channel,height*width).t())
             ab = s.view(channel,height*width).mm(s.view(channel,height*width).t())
             sloss = torch.mean((gram-ab)**2)
+
 
         with autocast():
             loss = config.a*oloss + config.b*sloss
