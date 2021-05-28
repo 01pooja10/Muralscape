@@ -2,7 +2,7 @@
 A Neural Style Transfer project that takes in an image along with a style of painting , combines the two in order to produce a beautiful, ultra-realistic version that consists of the target image rendered in the desired artistic style. This is a from-the-scratch Pytorch implementation of the paper - A Neural Algorithm of Artistic Style (Gatys et al.) and can be found [here](https://arxiv.org/abs/1508.06576)
 
 ## Intuition
-The VGG-19 model carves a path to extract content-based information from the original input image whereas the former facilitates extraction of style or texture-based information from style image. Thus, the total loss is the combination of both content and style loss values.
+The VGG-19 model enables users to extract content-based information from the original input image whereas the former facilitates extraction of style or texture-based information from style image. Thus, the total loss is the combination of both content and style loss values.
 
 ![loss](assets/loss.jpg)
 
