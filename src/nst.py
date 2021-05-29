@@ -85,12 +85,12 @@ def train(vgg,opt,scaler):
 
         if epoch%10==0:
             print('Model loss: ',loss.item())
-
+    '''
     chkpt = {'model':vgg.state_dict(),'optimizer':opt.state_dict()}
     torch.save(chkpt,config.model_path+'/nst_model.pth')
-
+    '''
     with torch.no_grad():
-        save_image(gn,config.out_path+'/output.jpg')
+        save_image(gn,config.out_path+'/output_m.jpg')
 
     print('Final Loss: ',loss.item())
 
