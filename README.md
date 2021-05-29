@@ -26,9 +26,9 @@ Further the gram matrices of both the style and original images are computed sim
 Final Loss of the model:  1466.8
 This value has been obtained after training for 4000 epochs on 2 images from the assets folder. The images and the combined/stylized image is displayed below:
 
-Original image                   |  Style image                     | Output
--------------------------------- |  ------------------------------- | ![op](samples/output.jpg)
-![real images](assets/jimi.jpeg) |  ![style images](assets/psy.jpg)       
+Original image                   |  Style image                     |  Output                     |
+-------------------------------- |  ------------------------------- |  -------------------------- |
+![real images](assets/jimi.jpeg) |  ![style images](assets/psy.jpg) |  ![op](samples/output.jpg)  |    
 
 Note: Training for more than 5000 epochs might give better results in terms of smoother blending of style and content of the original image. Tuning hyperparameters might cause more significant changes in the results of the implementation of Neural Style Transfer.
 
