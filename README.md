@@ -1,10 +1,16 @@
 # Muralscape
-A Neural Style Transfer project that takes in an image along with a style of painting , combines the two in order to produce a beautiful, ultra-realistic version that consists of the target image rendered in the desired artistic style. This is a from-the-scratch Pytorch implementation of the paper - A Neural Algorithm of Artistic Style (Gatys et al.) and can be found [here](https://arxiv.org/abs/1508.06576)
+A Neural Style Transfer project that takes in an image along with a style of painting , combines the two in order to produce a beautiful, ultra-realistic version that consists of the target image rendered in the desired artistic style.
+
+![pic](assets/paper.jpg)
+
+This is a from-the-scratch Pytorch implementation of the paper - A Neural Algorithm of Artistic Style (Gatys et al.) and can be found [here](https://arxiv.org/abs/1508.06576)
 
 ## Intuition
 The VGG-19 model enables users to extract content-based information from the original input image whereas the former facilitates extraction of style or texture-based information from style image. Thus, the total loss is the combination of both content and style loss values.
 
 ![loss](assets/loss.jpg)
+
+Further the gram matrices of both the style and original images are computed simply by multiplying their features together. Finally the network is trained for 3000 epochs on 2 input images - one of the original image that needs to transformed and another pertaining to the desired style.
 
 ## Implementation
 - The model used is VGG-19 and the (Conv2d) layers used to obtain features: 0, 5th, 10th, 19th and the 28th layers, as per details mentioned in the paper A neural algorithm of artistic style.
@@ -15,7 +21,16 @@ The VGG-19 model enables users to extract content-based information from the ori
 - Optimizer used: Adam,
 - The model is later stored as 'nst_model.pth' for easy access, under the model folder.
 
-Final Loss:  1853 - 2000 epochs
+
+## Results
+Final Loss of the model:  1466.8
+This value has been obtained after training for 4000 epochs on 2 images from the assets folder. The images and the combined/stylized image is displayed below:
+
+Original image                   |  Style image                     | Output
+-------------------------------- |  ------------------------------- | ![op](samples/output.jpg)
+![real images](assets/jimi.jpeg) |  ![style images](assets/psy.jpg)       
+
+Note: Training for more than 5000 epochs might give better results in terms of smoother blending of style and content of the original image. Tuning hyperparameters might cause more significant changes in the results of the implementation of Neural Style Transfer.
 
 ## Contributor
 
